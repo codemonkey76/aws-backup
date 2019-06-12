@@ -26,8 +26,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-//        $this->deleteSnaps();
-        $this->createSnapshots();
+//        phpinfo();
+        ini_set('memory_limit', '256M');
+        ini_set('max_execution_time', 1440);
+//        dd(php_ini_loaded_file());
+        $this->deleteSnaps();
+//        $this->createSnapshots();
 //        return view('home');
     }
     public function deleteSnaps()
@@ -91,11 +95,10 @@ class HomeController extends Controller
 
             //Get instance and ensure it is running
             $status = $ec2->describeInstances(['InstanceIds' => [$attachment->InstanceId]]);
-            $instance = (Object)($status->toArray()['Reservations'][0]['Instances'][0]);
-            dd($instance);
-            $state = (Object)$instance->State;
 
-            if ($state->Name == "running") {
+            $state = data_get($status->toArray(), 'Reservations.0.Instances.0.State.Name');;
+
+            if ($state === "running") {
                 //Only snapshot running instances
             }
         }
