@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])->everyMinute()->sendOutputTo("test.log")->emailOutputTo(config('app.contact'));
 
         $schedule->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])->daily()->emailOutputTo(config('app.contact'));
         $schedule->command('delete:snapshots', ['--frequency=daily', '--owner=939600349024'])->weekly()->emailOutputTo(config('app.contact'));
