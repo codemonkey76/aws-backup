@@ -24,14 +24,41 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])->everyMinute()->sendOutputTo("test.log")->emailOutputTo(config('app.contact'));
+        $schedule
+            ->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])
+            ->daily()
+            ->appendOutputTo(storage_path('logs/schedule.log'))
+            ->emailOutputOnFailure((config('app.contact')));
 
-        $schedule->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])->daily()->emailOutputTo(config('app.contact'));
-        $schedule->command('delete:snapshots', ['--frequency=daily', '--owner=939600349024'])->weekly()->emailOutputTo(config('app.contact'));
-        $schedule->command('delete:snapshots', ['--frequency=weekly', '--owner=939600349024'])->monthly()->emailOutputTo(config('app.contact'));
-        $schedule->command('create:snapshots', ['--tag=hourly'])->hourly()->emailOutputTo(config('app.contact'));
-        $schedule->command('create:snapshots', ['--tag=daily'])->daily()->emailOutputTo(config('app.contact'));
-        $schedule->command('create:snapshots', ['--tag=weekly'])->weekly()->emailOutputTo(config('app.contact'));
+        $schedule
+            ->command('delete:snapshots', ['--frequency=daily', '--owner=939600349024'])
+            ->weekly()
+            ->appendOutputTo(storage_path('logs/schedule.log'))
+            ->emailOutputOnFailure(config('app.contact'));
+
+        $schedule
+            ->command('delete:snapshots', ['--frequency=weekly', '--owner=939600349024'])
+            ->monthly()
+            ->appendOutputTo(storage_path('logs/schedule.log'))
+            ->emailOutputOnFailure(config('app.contact'));
+
+        $schedule
+            ->command('create:snapshots', ['--tag=hourly'])
+            ->hourly()
+            ->appendOutputTo(storage_path('logs/schedule.log'))
+            ->emailOutputOnFailure(config('app.contact'));
+
+        $schedule
+            ->command('create:snapshots', ['--tag=daily'])
+            ->daily()
+            ->appendOutputTo(storage_path('logs/schedule.log'))
+            ->emailOutputOnFailure(config('app.contact'));
+
+        $schedule
+            ->command('create:snapshots', ['--tag=weekly'])
+            ->weekly()
+            ->appendOutputTo(storage_path('logs/schedule.log'))
+            ->emailOutputOnFailure(config('app.contact'));
     }
 
     /**
