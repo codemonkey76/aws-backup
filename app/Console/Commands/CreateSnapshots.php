@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Aws\Ec2\Ec2Client;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class CreateSnapshots extends Command
@@ -12,14 +13,14 @@ class CreateSnapshots extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'create:snapshots {--tag=hourly}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Create Snapshots';
 
     /**
      * Create a new command instance.
@@ -58,19 +59,48 @@ class CreateSnapshots extends Command
 
         $all = $results->toArray();
         $volumes = $all['Volumes'];
+        $tag = $this->option('tag');
 
         foreach ($volumes as $vol) {
-            $obj = (Object)$vol;;
+            $obj = (Object)$vol;
+            //dd($vol);
+            //If there are no attachments, they should not be in the list, because we specified attachment.status=attached
+            //could be an api bug?
+            if (empty($obj->Attachments)) break;
             $attachment = (Object)$obj->Attachments[0];
-            dump($attachment->InstanceId);
 
             //Get instance and ensure it is running
-            $status = $ec2->describeInstances(['InstanceIds' => [$attachment->InstanceId]]);
+            $results = $ec2->describeInstances(['InstanceIds' => [$attachment->InstanceId]])->toArray();
+            $instance = data_get($results, 'Reservations.0.Instances.0');
+            $instanceName = collect($instance['Tags'])->where('Key', 'Name')->first()['Value'];
+            $volumeBlock = $attachment->Device;
+            $date = (new Carbon())->format('Ymd');
 
-            $state = data_get($status->toArray(), 'Reservations.0.Instances.0.State.Name');;
-
+            $state = data_get($instance, 'State.Name');
+            $this->info("State = $state");
             if ($state === "running") {
                 //Only snapshot running instances
+                $this->info("Creating snapshot Automated backup of $instanceName-$volumeBlock-$date");
+                $snap = $ec2->createSnapshot([
+                    'Description' => "Automated backup of $instanceName-$volumeBlock-$date",
+                    'VolumeId' => "$obj->VolumeId"
+                ]);
+                $snap_id = $snap->toArray()['SnapshotId'];
+
+                sleep(1);
+
+                $this->info('Creating Tag');
+                $ec2->createTags([
+                    'Resources' => [
+                        $snap_id,
+                    ],
+                    'Tags' => [
+                        [
+                            'Key' => 'Backup',
+                            'Value' => $tag,
+                        ],
+                    ],
+                ]);
             }
         }
     }

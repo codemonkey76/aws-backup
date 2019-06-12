@@ -14,7 +14,7 @@ class DeleteSnapshots extends Command
      *
      * @var string
      */
-    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=]';
+    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=}';
 
     /**
      * The console command description.
