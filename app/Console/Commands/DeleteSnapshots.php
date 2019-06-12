@@ -38,6 +38,7 @@ class DeleteSnapshots extends Command
      */
     public function handle()
     {
+        $this->info("Running DeleteSnapshots");
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => 'ap-southeast-2']);
         $frequency = $this->option('frequency');
 
@@ -53,14 +54,18 @@ class DeleteSnapshots extends Command
 
         $old = new Carbon();
 
+        $this->info('Frequency: ' . $frequency);
         switch ($frequency) {
             case 'daily':
+                $this->info("Snapshot is old if older than 10 days");
                 $old = $old->subDays(10);
                 break;
             case 'weekly':
+                $this->info("Snapshot is old if older than 4 weeks");
                 $old = $old->subweeks(4);
                 break;
             case 'hourly':
+                $this->info("Snapshot is old if older than 48 hours");
                 $old = $old->subHours(48);
                 break;
         }
@@ -68,15 +73,17 @@ class DeleteSnapshots extends Command
         $all = $results->toArray();
 
         $snapshots = $all['Snapshots'];
+        $this->info("Found " . count($snapshots) . " snapshots with Frequency: " . $frequency);
 
 
         foreach ($snapshots as $snap) {
             $obj = (Object)$snap;
 
-            $snapData = new Carbon($obj->StartTime->jsonSerialize());
+            $snapDate = new Carbon($obj->StartTime->jsonSerialize());
 
-            if ($snapData < $old) {
+            if ($snapDate < $old) {
                 $id = $obj->SnapshotId;
+                $this->info('Snapshot date: ' . $snapDate);
                 $this->info('Deleting Snapshot: ' . $id);
                 try {
                     $ec2->deleteSnapshot(['SnapshotId' => $id]);
@@ -84,6 +91,9 @@ class DeleteSnapshots extends Command
                 } catch (Exception $e) {
                     $this->error($e->getMessage());
                 }
+            }
+            else {
+                $this->info('Snapshot date: ' . $snapDate . ' is newer than ' . $old);
             }
         }
     }

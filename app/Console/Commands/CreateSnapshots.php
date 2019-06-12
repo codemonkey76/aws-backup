@@ -39,6 +39,7 @@ class CreateSnapshots extends Command
      */
     public function handle()
     {
+        $this->info('Running createSnapshots');
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => 'ap-southeast-2']);
 
         //Get volumes that are attached to instances and have tag:Environment=Production
@@ -59,14 +60,18 @@ class CreateSnapshots extends Command
 
         $all = $results->toArray();
         $volumes = $all['Volumes'];
+        $this->info('Found ' . count($volumes) . ' volumes attached and with production tag');
         $tag = $this->option('tag');
 
         foreach ($volumes as $vol) {
             $obj = (Object)$vol;
-            //dd($vol);
             //If there are no attachments, they should not be in the list, because we specified attachment.status=attached
             //could be an api bug?
-            if (empty($obj->Attachments)) break;
+            if (empty($obj->Attachments)) {
+                $this->info('No attached instance');
+                break;
+            }
+
             $attachment = (Object)$obj->Attachments[0];
 
             //Get instance and ensure it is running
@@ -89,7 +94,7 @@ class CreateSnapshots extends Command
 
                 sleep(1);
 
-                $this->info('Creating Tag');
+                $this->info('Adding Tag: Backup=' . $tag);
                 $ec2->createTags([
                     'Resources' => [
                         $snap_id,
@@ -101,6 +106,9 @@ class CreateSnapshots extends Command
                         ],
                     ],
                 ]);
+            }
+            else {
+                $this->info("Skipping, instance not running");
             }
         }
     }
