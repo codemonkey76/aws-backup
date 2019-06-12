@@ -14,7 +14,7 @@ class DeleteSnapshots extends Command
      *
      * @var string
      */
-    protected $signature = 'delete:snapshots';
+    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=]';
 
     /**
      * The console command description.
@@ -34,16 +34,36 @@ class DeleteSnapshots extends Command
     }
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws Exception
      */
     public function handle()
     {
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => 'ap-southeast-2']);
+        $frequency = $this->option('frequency');
+
         $results = $ec2->describeSnapshots([
-            'OwnerIds' => ['939600349024']
+            'OwnerIds' => [$this->option('owner')],
+            'Filters' => [
+                [
+                    'Name' => 'tag:Backup',
+                    'Values' => [$frequency],
+                ],
+            ],
         ]);
+
+        $old = new Carbon();
+
+        switch ($frequency) {
+            case 'daily':
+                $old = $old->subDays(10);
+                break;
+            case 'weekly':
+                $old = $old->subweeks(4);
+                break;
+            case 'hourly':
+                $old = $old->subHours(48);
+                break;
+        }
 
         $all = $results->toArray();
 
@@ -54,7 +74,6 @@ class DeleteSnapshots extends Command
             $obj = (Object)$snap;
 
             $snapData = new Carbon($obj->StartTime->jsonSerialize());
-            $old = (new Carbon())->subDays(30);
 
             if ($snapData < $old) {
                 $id = $obj->SnapshotId;
