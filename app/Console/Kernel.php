@@ -25,12 +25,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $schedule->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])->daily();
-        $schedule->command('delete:snapshots', ['--frequency=daily', '--owner=939600349024'])->weekly();
-        $schedule->command('delete:snapshots', ['--frequency=weekly', '--owner=939600349024'])->monthly();
-        $schedule->command('create:snapshots', ['--tag=hourly'])->hourly();
-        $schedule->command('create:snapshots', ['--tag=daily'])->daily();
-        $schedule->command('create:snapshots', ['--tag=weekly'])->weekly();
+        $schedule->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])->daily()->emailOutputTo(config('app.contact'));
+        $schedule->command('delete:snapshots', ['--frequency=daily', '--owner=939600349024'])->weekly()->emailOutputTo(config('app.contact'));
+        $schedule->command('delete:snapshots', ['--frequency=weekly', '--owner=939600349024'])->monthly()->emailOutputTo(config('app.contact'));
+        $schedule->command('create:snapshots', ['--tag=hourly'])->hourly()->emailOutputTo(config('app.contact'));
+        $schedule->command('create:snapshots', ['--tag=daily'])->daily()->emailOutputTo(config('app.contact'));
+        $schedule->command('create:snapshots', ['--tag=weekly'])->weekly()->emailOutputTo(config('app.contact'));
     }
 
     /**
