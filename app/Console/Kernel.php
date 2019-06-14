@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
+use App\Task;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Schema;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,41 +26,19 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule
-            ->command('delete:snapshots', ['--frequency=hourly', '--owner=939600349024'])
-            ->daily()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->emailOutputOnFailure((config('app.contact')));
+        if (Schema::hasTable('tasks')) {
+            $tasks = Task::all();
 
-        $schedule
-            ->command('delete:snapshots', ['--frequency=daily', '--owner=939600349024'])
-            ->weekly()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->emailOutputOnFailure(config('app.contact'));
-
-        $schedule
-            ->command('delete:snapshots', ['--frequency=weekly', '--owner=939600349024'])
-            ->monthly()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->emailOutputOnFailure(config('app.contact'));
-
-        $schedule
-            ->command('create:snapshots', ['--tag=hourly'])
-            ->hourly()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->emailOutputOnFailure(config('app.contact'));
-
-        $schedule
-            ->command('create:snapshots', ['--tag=daily'])
-            ->daily()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->emailOutputOnFailure(config('app.contact'));
-
-        $schedule
-            ->command('create:snapshots', ['--tag=weekly'])
-            ->weekly()
-            ->appendOutputTo(storage_path('logs/schedule.log'))
-            ->emailOutputOnFailure(config('app.contact'));
+            foreach ($tasks as $task) {
+                if (in_array($task->frequency, Task::$frequencies)) {
+                    $schedule
+                        ->command($task->command, $task->args)
+                        ->${$task->frequency}()
+                        ->appendOutputTo(storage_path('logs/schedule.log'))
+                        ->emailOutputOnFailure(config('app.contact'));
+                }
+            }
+        }
     }
 
     /**
