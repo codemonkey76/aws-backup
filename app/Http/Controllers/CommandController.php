@@ -21,7 +21,7 @@ class CommandController extends Controller
             $message .= "Valid command received: $args[0]";
         }
         else {
-            $message .= "Invalid command: $args[0], valid commands are $validCommands";
+            $message .= "Invalid command: $args[0], valid commands are " . implode($validCommands);
         }
 
         Log::info($args);
