@@ -238,9 +238,9 @@
       <path value="$PROJECT_DIR$/vendor/laravel/slack-notification-channel" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-95" />
+    <option name="y" value="188" />
     <option name="width" value="1616" />
     <option name="height" value="876" />
   </component>
