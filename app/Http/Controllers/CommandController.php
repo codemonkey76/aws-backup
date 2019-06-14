@@ -12,7 +12,7 @@ class CommandController extends Controller
         if ($request['token']!== env('SLACK_COMMAND_TOKEN')) {
             return response(419);
         }
-        
+
         Log::info($request->all());
         return "Running the command you requested";
     }
