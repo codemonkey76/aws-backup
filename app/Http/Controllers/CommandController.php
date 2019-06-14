@@ -18,8 +18,7 @@ class CommandController extends Controller
         }
         $args = explode(' ',$request['text']);
 
-        if (in_array(
-            Str::camel($args[0]), $validCommands)) {
+        if (in_array($args[0], $validCommands)) {
             $message .= "Valid command received: $args[0]";
         }
         else {
