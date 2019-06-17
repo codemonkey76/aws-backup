@@ -14,7 +14,7 @@ class DeleteSnapshots extends Command
      *
      * @var string
      */
-    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=}';
+    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=} {--region=}';
 
     /**
      * The console command description.
@@ -39,8 +39,10 @@ class DeleteSnapshots extends Command
     public function handle()
     {
         $owner = $this->option('owner') ?? env('AWS_DEFAULT_OWNER');
+        $region = $this->option('region') ?? env('AWS_DEFAULT_REGION');
+
         $this->info("Running DeleteSnapshots");
-        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => env('AWS_DEFAULT_REGION')]);
+        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
         $frequency = $this->option('frequency');
 
         $results = null;
