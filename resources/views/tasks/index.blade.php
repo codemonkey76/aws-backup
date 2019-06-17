@@ -21,7 +21,12 @@
                             <td scope="row">{{$task->id}}</td>
                             <td>{{$task->name}}</td>
                             <td>{{$task->command}}</td>
-                            <td>{{$task->args}}</td>
+                            <td>
+                            <?php $args = explode(' ', $task->args) ?>
+                            @foreach ($args as $arg)
+                                    {{ $arg }}<br>
+                            @endforeach
+                            </td>
                             <td>{{$task->frequency}}</td>
                             <td>
                                 <form action="{{route('tasks.destroy', $task->id)}}" method="POST">
