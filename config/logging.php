@@ -38,6 +38,7 @@ return [
             'driver' => 'stack',
             'channels' => ['daily', 'slack'],
             'ignore_exceptions' => false,
+            'level' => 'debug'
         ],
 
         'single' => [

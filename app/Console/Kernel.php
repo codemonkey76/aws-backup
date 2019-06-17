@@ -45,8 +45,8 @@ class Kernel extends ConsoleKernel
                         if (in_array($task->frequency, Task::$frequencies))
                         {
                             $schedule
-                                ->command($task->command, $task->args)
-                                ->${$task->frequency}()
+                                ->command($task->command, explode(' ', $task->args))
+                                ->{$task->frequency}()
                                 ->appendOutputTo(storage_path('logs/schedule.log'))
                                 ->emailOutputOnFailure(config('app.contact'));
                         }
