@@ -14,7 +14,7 @@ class CreateSnapshots extends Command
      *
      * @var string
      */
-    protected $signature = 'create:snapshots {--tag=hourly}';
+    protected $signature = 'create:snapshots {--tag=hourly} {--region=}';
 
     /**
      * The console command description.
@@ -42,7 +42,8 @@ class CreateSnapshots extends Command
     {
         Log::info('Running createSnapshots');
         $this->info('Running createSnapshots');
-        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => env('AWS_DEFAULT_REGION')]);
+        $region = $this->option('region') ?? env('AWS_DEFAULT_REGION');
+        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
 
         //Get volumes that are attached to instances and have tag:Environment=Production
         $results = $ec2->describeVolumes([
