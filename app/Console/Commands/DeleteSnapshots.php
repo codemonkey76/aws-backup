@@ -38,19 +38,30 @@ class DeleteSnapshots extends Command
      */
     public function handle()
     {
+        $owner = $this->option('owner') ?? env('AWS_DEFAULT_OWNER');
         $this->info("Running DeleteSnapshots");
-        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => 'ap-southeast-2']);
+        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => env('AWS_DEFAULT_REGION')]);
         $frequency = $this->option('frequency');
 
-        $results = $ec2->describeSnapshots([
-            'OwnerIds' => [$this->option('owner')],
-            'Filters' => [
-                [
-                    'Name' => 'tag:Backup',
-                    'Values' => [$frequency],
+        $results = null;
+        if ($frequency==="untagged")
+        {
+            $results = $ec2->describeSnapshots([
+                'OwnerIds' => [$owner],
+            ]);
+        }
+        else
+        {
+            $results = $ec2->describeSnapshots([
+                'OwnerIds' => [$owner],
+                'Filters'  => [
+                    [
+                        'Name'   => 'tag:Backup',
+                        'Values' => [$frequency],
+                    ],
                 ],
-            ],
-        ]);
+            ]);
+        }
 
         $old = new Carbon();
 

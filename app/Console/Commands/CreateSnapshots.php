@@ -42,7 +42,7 @@ class CreateSnapshots extends Command
     {
         Log::info('Running createSnapshots');
         $this->info('Running createSnapshots');
-        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => 'ap-southeast-2']);
+        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => env('AWS_DEFAULT_REGION')]);
 
         //Get volumes that are attached to instances and have tag:Environment=Production
         $results = $ec2->describeVolumes([

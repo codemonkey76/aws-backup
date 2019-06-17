@@ -14,7 +14,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::all();
+        return view('tasks.index', compact('tasks'));
     }
 
     /**
@@ -24,7 +25,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view('tasks.create');
     }
 
     /**
@@ -35,7 +36,15 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required',
+            'command' => 'required',
+            'args' => 'nullable'
+        ]);
+        dd($validated);
+//        Task::create($validated);
+
+  //      return redirect()->route('tasks.index');
     }
 
     /**
@@ -57,7 +66,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -75,11 +84,13 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Task  $task
+     * @param  \App\Task $task
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return redirect()->route('tasks.index');
     }
 }
