@@ -69,6 +69,13 @@ class TaskController extends Controller
         return view('tasks.edit', compact('task'));
     }
 
+    public function clone(Task $task)
+    {
+        $task = $task->replicate();
+        $task->push();
+        return view('tasks.edit', compact('task'));
+    }
+
     /**
      * Update the specified resource in storage.
      *

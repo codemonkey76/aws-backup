@@ -29,3 +29,4 @@ Route::get('/tasks/{task}/edit', 'TaskController@edit')->name('tasks.edit');
 Route::patch('/tasks/{task}', 'TaskController@update')->name('tasks.update');
 Route::delete('/tasks/{task}', 'TaskController@destroy')->name('tasks.destroy');
 Route::post('/tasks', 'TaskController@store')->name('tasks.store');
+Route::get('/tasks/{task}/clone', 'TaskController@clone')->name('tasks.clone');

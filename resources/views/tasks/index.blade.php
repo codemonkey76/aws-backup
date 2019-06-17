@@ -32,8 +32,12 @@
                                 <form action="{{route('tasks.destroy', $task->id)}}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <a href="{{route('tasks.edit', $task->id)}}" class="btn btn-dark btn-outline-warning mr-2">Edit</a>
-                                    <button class="btn btn-dark btn-outline-danger">Delete</button>
+                                    <a href="{{route('tasks.edit', $task->id)}}"
+                                       class="btn btn-dark btn-outline-warning mr-2" title="Edit Task">
+                                        <i class="fas fa-edit"></i></a>
+                                    <a href="{{route('tasks.clone', $task->id)}}"
+                                       class="btn btn-dark btn-outline-primary mr-2" title="Clone Task"><i class="fas fa-clone"></i></a>
+                                    <button class="btn btn-dark btn-outline-danger" title="Delete Task"><i class="fas fa-trash-alt"></i></button>
                                 </form>
                             </td>
                         </tr>
