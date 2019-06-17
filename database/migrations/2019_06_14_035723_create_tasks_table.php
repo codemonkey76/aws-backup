@@ -18,6 +18,7 @@ class CreateTasksTable extends Migration
             $table->string('name');
             $table->string('command');
             $table->string('args');
+            $table->string('frequency');
             $table->timestamps();
         });
     }

@@ -11,14 +11,14 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control {{$errors->has('name')?'is-invalid':''}}" id="name" name="name" placeholder="Enter task name">
+                            <input type="text" class="form-control {{$errors->has('name')?'is-invalid':''}}" id="name" name="name" placeholder="Enter task name" value="{{old('name')}}">
                             <div class="invalid-feedback">
                                 <span>{{$errors->first('name')}}</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="command">Command</label>
-                            <input type="text" class="form-control {{$errors->has('command')?'is-invalid':''}}" id="command" name="command" placeholder="e.g. create:snapshots">
+                            <input type="text" class="form-control {{$errors->has('command')?'is-invalid':''}}" id="command" name="command" placeholder="e.g. create:snapshots" value="{{old('command')}}">
                             <div class="invalid-feedback">
                                 <span>{{$errors->first('command')}}</span>
                             </div>
@@ -28,7 +28,7 @@
                             <select name="frequency" id="frequency" class="form-control {{$errors->has('frequency')?'is-invalid':''}}">
                                 <option>Select a frequency</option>
                                 @foreach(\App\Task::$frequencies as $frequency)
-                                    <option value="$frequency">{{preg_replace('/(?<=\\w)(?=[A-Z])/', " $1", \Illuminate\Support\Str::Studly($frequency))}}</option>
+                                    <option value="{{$frequency}}" {{old('frequency')===$frequency?'selected':''}}>{{preg_replace('/(?<=\\w)(?=[A-Z])/', " $1", \Illuminate\Support\Str::Studly($frequency))}}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">
@@ -38,7 +38,7 @@
                         </div>
                         <div class="form-group">
                             <label for="args">Arguments (separate multiple arguments with spaces)</label>
-                            <input type="text" class="form-control {{$errors->has('args')?'is-invalid':''}}" id="args" name="args" placeholder="e.g. --tag=Hourly">
+                            <input type="text" class="form-control {{$errors->has('args')?'is-invalid':''}}" id="args" name="args" placeholder="e.g. --tag=Hourly" value="{{old('args')}}">
                             <div class="invalid-feedback">
                                 <span>{{$errors->first('args')}}</span>
                             </div>

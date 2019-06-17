@@ -39,12 +39,12 @@ class TaskController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'command' => 'required',
+            'frequency' => 'in:'. implode(Task::$frequencies, ','),
             'args' => 'nullable'
         ]);
-        dd($validated);
-//        Task::create($validated);
+        Task::create($validated);
 
-  //      return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index');
     }
 
     /**
@@ -78,7 +78,15 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required',
+            'command' => 'required',
+            'frequency' => 'in:'. implode(Task::$frequencies, ','),
+            'args' => 'nullable'
+        ]);
+        $task->update($validated);
+
+        return redirect()->route('tasks.index');
     }
 
     /**

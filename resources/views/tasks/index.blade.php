@@ -9,6 +9,8 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Task Name</th>
+                        <th scope="col">Command</th>
+                        <th scope="col">Arguments</th>
                         <th scope="col">Frequency</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -18,21 +20,27 @@
                         <tr>
                             <td scope="row">{{$task->id}}</td>
                             <td>{{$task->name}}</td>
+                            <td>{{$task->command}}</td>
+                            <td>{{$task->args}}</td>
                             <td>{{$task->frequency}}</td>
                             <td>
-                                <a href="{{route('tasks.edit')}}" class="btn btn-dark btn-outline-primary">Edit</a>
-                                <button class="btn btn-dark btn-outline-danger">Delete</button>
+                                <form action="{{route('tasks.destroy', $task->id)}}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <a href="{{route('tasks.edit', $task->id)}}" class="btn btn-dark btn-outline-warning mr-2">Edit</a>
+                                    <button class="btn btn-dark btn-outline-danger">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4">There are currently no tasks.</td>
+                            <td colspan="6">There are currently no tasks.</td>
                         </tr>
                     @endforelse
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="6">
                                 <a href="{{route('tasks.create')}}" class="btn btn-dark btn-outline-primary">New Task</a>
                             </td>
                         </tr>
