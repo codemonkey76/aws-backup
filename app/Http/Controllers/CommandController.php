@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -35,7 +36,14 @@ class CommandController extends Controller
                     $command_args[''] = $option;
                 }
             }
-            Artisan::call($args[0], $command_args);
+            try
+            {
+                Artisan::call($args[0], $command_args);
+            }
+            catch (Exception $ex) {
+                $message .= "An Exception Occurred: " . $ex->getMessage() . PHP_EOL;
+                $message .= "Tried running artisan command: " . $args[0] . ', with options: ' . json_encode($command_args) . PHP_EOL;
+            }
         }
         else {
             $message .= "Invalid command: $args[0], valid commands are " . implode($validCommands, ' ');
