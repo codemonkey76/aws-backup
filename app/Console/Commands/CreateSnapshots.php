@@ -42,7 +42,7 @@ class CreateSnapshots extends Command
     {
         $log = '';
         $logType = 'info';
-        $log .= 'Running createSnapshots\n';
+        $log .= 'Running createSnapshots' . PHP_EOL;
         $this->info('Running createSnapshots');
         $region = $this->option('region') ?? env('AWS_DEFAULT_REGION');
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
@@ -66,7 +66,7 @@ class CreateSnapshots extends Command
         $all = $results->toArray();
         $volumes = $all['Volumes'];
         $this->info('Found ' . count($volumes) . ' volumes attached and with production tag');
-        $log .= 'Found ' . count($volumes) . ' volumes attached and with production tag\n';
+        $log .= 'Found ' . count($volumes) . ' volumes attached and with production tag' . PHP_EOL;
         $tag = $this->option('tag');
 
         foreach ($volumes as $vol) {
@@ -74,7 +74,7 @@ class CreateSnapshots extends Command
             //If there are no attachments, they should not be in the list, because we specified attachment.status=attached
             //could be an api bug?
             if (empty($obj->Attachments)) {
-                $log .= "No attached instance: " . $obj->VolumeId . '\n';
+                $log .= "No attached instance: " . $obj->VolumeId . PHP_EOL;
                 $this->info('No attached instance');
                 break;
             }
@@ -89,12 +89,12 @@ class CreateSnapshots extends Command
             $date = (new Carbon())->format('Ymd');
 
             $state = data_get($instance, 'State.Name');
-            $log .= "State = " . $state . '\n';
+            $log .= "State = " . $state . PHP_EOL;
             $this->info("State = $state");
             if ($state === "running") {
                 //Only snapshot running instances
                 $this->info("Creating snapshot Automated backup of $instanceName-$volumeBlock-$date");
-                $log .= "Creating snapshot Automated backup of $instanceName-$volumeBlock-$date\n";
+                $log .= "Creating snapshot Automated backup of $instanceName-$volumeBlock-$date" . PHP_EOL;
 
                 $snap = $ec2->createSnapshot([
                     'Description' => "Automated backup of $instanceName-$volumeBlock-$date",
@@ -105,7 +105,7 @@ class CreateSnapshots extends Command
                 sleep(15); //Avoid rate limiting
 
                 $this->info('Adding Tag: Backup=' . $tag);
-                $log .= 'Adding Tag: Backup=' . $tag . '\n';
+                $log .= 'Adding Tag: Backup=' . $tag . PHP_EOL;
                 $ec2->createTags([
                     'Resources' => [
                         $snap_id,
@@ -119,7 +119,7 @@ class CreateSnapshots extends Command
                 ]);
             }
             else {
-                $log .= "Skipping, instance: " . $instanceName . " is not running\n";
+                $log .= "Skipping, instance: " . $instanceName . " is not running" . PHP_EOL;
                 $logType = "warning";
                 $this->info("Skipping, instance not running");
             }
