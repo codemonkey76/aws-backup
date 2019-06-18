@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e19100b8-939c-4a8a-befb-6d71f6a24877" name="Default Changelist" comment="Kern">
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/TaskController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/TaskController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,8 +32,8 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key=".env file" value="2" />
-          <entry key="Blade" value="61" />
-          <entry key="PHP" value="75" />
+          <entry key="Blade" value="62" />
+          <entry key="PHP" value="77" />
           <entry key="SCSS" value="2" />
           <entry key="SQL" value="1" />
           <entry key="Scratch" value="2" />
@@ -43,7 +43,7 @@
         <counts>
           <entry key=".env file" value="119" />
           <entry key="Blade" value="3382" />
-          <entry key="PHP" value="2842" />
+          <entry key="PHP" value="3031" />
           <entry key="PLAIN_TEXT" value="16" />
           <entry key="SCSS" value="75" />
           <entry key="SQL" value="2" />
@@ -54,10 +54,17 @@
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/Http/Controllers/TaskController.php">
+        <entry file="file://$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="899">
-              <caret line="74" column="22" lean-forward="true" selection-start-line="74" selection-start-column="22" selection-end-line="74" selection-end-column="22" />
+            <state relative-caret-position="790">
+              <caret line="126" column="5" lean-forward="true" selection-start-line="126" selection-start-column="5" selection-end-line="126" selection-end-column="5" />
+              <folding>
+                <element signature="e#40#62#0#PHP" expanded="true" />
+                <element signature="e#1145#1502#1#PHP" />
+                <element signature="e#1812#4158#0#PHP" />
+                <element signature="e#2879#4148#0#PHP" />
+                <element signature="e#3975#4148#0#PHP" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -87,12 +94,12 @@
         <option value="$PROJECT_DIR$/config/logging.php" />
         <option value="$PROJECT_DIR$/resources/views/tasks/edit.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/tasks/create.blade.php" />
-        <option value="$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php" />
         <option value="$PROJECT_DIR$/app/Console/Commands/DeleteSnapshots.php" />
         <option value="$PROJECT_DIR$/resources/sass/app.scss" />
         <option value="$PROJECT_DIR$/resources/views/tasks/index.blade.php" />
         <option value="$PROJECT_DIR$/routes/web.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/TaskController.php" />
+        <option value="$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php" />
       </list>
     </option>
   </component>
@@ -203,10 +210,11 @@
       <path value="$PROJECT_DIR$/vendor/jtant/laravel-env-sync" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="2560" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="2668" />
+    <option name="y" value="103" />
     <option name="width" value="1920" />
-    <option name="height" value="1080" />
+    <option name="height" value="1057" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -330,10 +338,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="47402000" />
+    <option name="totallyTimeSpent" value="47921000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2560" y="0" width="1920" height="1080" extended-state="0" />
+    <frame x="2668" y="103" width="1920" height="1057" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18229167" />
@@ -501,16 +509,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1146">
-          <caret line="44" column="71" lean-forward="true" selection-start-line="44" selection-start-column="8" selection-end-line="44" selection-end-column="71" />
-          <folding>
-            <element signature="e#40#62#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/resources/views/home.blade.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
@@ -535,10 +533,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/tasks/index.blade.php">
+    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/TaskController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="744">
-          <caret line="37" column="53" selection-start-line="37" selection-start-column="53" selection-end-line="37" selection-end-column="53" />
+        <state relative-caret-position="688">
+          <caret line="69" column="5" lean-forward="true" selection-start-line="69" selection-start-column="5" selection-end-line="69" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -552,10 +550,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Http/Controllers/TaskController.php">
+    <entry file="file://$PROJECT_DIR$/resources/views/tasks/index.blade.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="899">
-          <caret line="74" column="22" lean-forward="true" selection-start-line="74" selection-start-column="22" selection-end-line="74" selection-end-column="22" />
+        <state relative-caret-position="616">
+          <caret line="33" column="53" lean-forward="true" selection-start-line="33" selection-start-column="53" selection-end-line="33" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/Console/Commands/CreateSnapshots.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="790">
+          <caret line="126" column="5" lean-forward="true" selection-start-line="126" selection-start-column="5" selection-end-line="126" selection-end-column="5" />
+          <folding>
+            <element signature="e#40#62#0#PHP" expanded="true" />
+            <element signature="e#1145#1502#1#PHP" />
+            <element signature="e#1812#4158#0#PHP" />
+            <element signature="e#2879#4148#0#PHP" />
+            <element signature="e#3975#4148#0#PHP" />
+          </folding>
         </state>
       </provider>
     </entry>
