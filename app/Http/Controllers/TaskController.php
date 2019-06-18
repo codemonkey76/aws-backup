@@ -73,7 +73,7 @@ class TaskController extends Controller
     {
         $task = $task->replicate();
         $task->push();
-        return view('tasks.edit', compact('task'));
+        return redirect()->route('tasks.edit', $task->id);
     }
 
     /**
