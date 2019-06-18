@@ -120,9 +120,10 @@ class CreateSnapshots extends Command
             }
             else {
                 $log .= "Skipping, instance: " . $instanceName . " is not running\n";
+                $logType = "warning";
                 $this->info("Skipping, instance not running");
             }
         }
-        Log::info($log);
+        Log::$logType($log);
     }
 }
