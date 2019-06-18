@@ -46,57 +46,82 @@ class DeleteSnapshots extends Command
         $region = $this->option('region') ?? env('AWS_DEFAULT_REGION');
 
         $this->info("Running DeleteSnapshots");
-        $log .= "Running DeleteSnapshots\n";
+        $log .= "Running DeleteSnapshots" . PHP_EOL;
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
         $frequency = $this->option('frequency');
 
         $results = null;
         if ($frequency==="untagged")
         {
-            $results = $ec2->describeSnapshots([
-                'OwnerIds' => [$owner],
-            ]);
+            try {
+                $results = $ec2->describeSnapshots([
+                    'OwnerIds' => [$owner],
+                ]);
+            }
+            catch (Exception $ex)
+            {
+                $log .= $ex->getMessage() . PHP_EOL;
+                $logType = "error";
+                $this->error($ex->getMessage());
+            }
+
         }
         else
         {
-            $results = $ec2->describeSnapshots([
-                'OwnerIds' => [$owner],
-                'Filters'  => [
-                    [
-                        'Name'   => 'tag:Backup',
-                        'Values' => [$frequency],
+            try {
+                $results = $ec2->describeSnapshots([
+                    'OwnerIds' => [$owner],
+                    'Filters'  => [
+                        [
+                            'Name'   => 'tag:Backup',
+                            'Values' => [$frequency],
+                        ],
                     ],
-                ],
-            ]);
+                ]);
+            }
+            catch (Exception $ex) {
+                $log .= $ex->getMessage() . PHP_EOL;
+                $logType = "error";
+                $this->error($ex->getMessage());
+            }
+
         }
 
         $old = new Carbon();
 
         $this->info('Frequency: ' . $frequency);
-        $log .= 'Frequency: ' . $frequency . '\n';
+        $log .= 'Frequency: ' . $frequency . PHP_EOL;
 
         switch ($frequency) {
             case 'daily':
                 $num = 10;
                 $msg = "Snapshot is old if older than $num days";
                 $this->info($msg);
-                $log .= $msg . '\n';
+                $log .= $msg . PHP_EOL;
                 $old = $old->subDays($num);
                 break;
             case 'weekly':
                 $num = 4;
                 $msg = "Snapshot is old if older than $num weeks";
                 $this->info($msg);
-                $log .= $msg . '\n';
+                $log .= $msg . PHP_EOL;
                 $old = $old->subweeks($num);
                 break;
             case 'hourly':
                 $num = 48;
                 $msg = "Snapshot is old if older than $num hours";
                 $this->info($msg);
-                $log .= $msg . '\n';
+                $log .= $msg . PHP_EOL;
                 $old = $old->subHours($num);
                 break;
+        }
+
+        if ($results === null)
+        {
+            $log .= "No Snapshots found" . PHP_EOL;
+            $logType = "error";
+            $this->error("No Snapshots found");
+            return;
         }
 
         $all = $results->toArray();
@@ -104,7 +129,7 @@ class DeleteSnapshots extends Command
         $snapshots = $all['Snapshots'];
 
         $this->info("Found " . count($snapshots) . " snapshots with Frequency: " . $frequency);
-        $log .= "Found " . count($snapshots) . " snapshots with Frequency: " . $frequency . '\n';
+        $log .= "Found " . count($snapshots) . " snapshots with Frequency: " . $frequency . PHP_EOL;
 
 
 
@@ -118,20 +143,20 @@ class DeleteSnapshots extends Command
                 $this->info('Snapshot date: ' . $snapDate);
                 $this->info('Deleting Snapshot: ' . $id);
 
-                $log .= 'Snapshot date: ' . $snapDate . '\n';
-                $log .= 'Deleting Snapshot: ' . $id . '\n';
+                $log .= 'Snapshot date: ' . $snapDate . PHP_EOL;
+                $log .= 'Deleting Snapshot: ' . $id . PHP_EOL;
                 try {
                     $ec2->deleteSnapshot(['SnapshotId' => $id]);
                     sleep(1);
                 } catch (Exception $e) {
                     $this->error($e->getMessage());
-                    $log .= $e->getMessage() . '\n';
+                    $log .= $e->getMessage() . PHP_EOL;
                     $logType = "error";
                 }
             }
             else {
                 $this->info('Snapshot date: ' . $snapDate . ' is newer than ' . $old);
-                $log .= 'Snapshot date: ' . $snapDate . ' is newer than ' . $old . '\n';
+                $log .= 'Snapshot date: ' . $snapDate . ' is newer than ' . $old . PHP_EOL;
             }
         }
 
