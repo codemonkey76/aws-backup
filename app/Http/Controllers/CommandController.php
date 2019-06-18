@@ -10,7 +10,7 @@ class CommandController extends Controller
 {
     public function execute(Request $request)
     {
-        $validCommands = ['createSnapshots','deleteSnapshots'];
+        $validCommands = ['create:snapshots','delete:snapshots'];
         $message = '';
 
         if ($request['token']!== env('SLACK_COMMAND_TOKEN')) {
