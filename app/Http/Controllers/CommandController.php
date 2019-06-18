@@ -12,16 +12,21 @@ class CommandController extends Controller
     public function execute(Request $request)
     {
         $validCommands = ['create:snapshots','delete:snapshots'];
-        $message = '';
+        $logType = "info";
+        $message = 'Command received' . PHP_EOL;
 
         if ($request['token']!== env('SLACK_COMMAND_TOKEN')) {
-            return response(419);
+            $message .= 'Invalid SLACK_COMMAND_TOKEN' . PHP_EOL;
+            $logType = "warning";
+            Log::$logType($message);
+            return response("Invalid TOKEN", 419);
         }
-        $args = explode(' ',$request['text']);
 
+        $args = explode(' ',$request['text']);
+        $message .= "```" . json_encode($args) . "```" . PHP_EOL;
         $command_args = [];
         if (in_array($args[0], $validCommands)) {
-            $message .= "Valid command received: $args[0]";
+            $message .= "Valid command received: $args[0]" . PHP_EOL;
             $options = array_slice($args, 1);
             foreach ($options as $option) {
                 if (substr($option, 0, 2) === "--") {
@@ -38,18 +43,25 @@ class CommandController extends Controller
             }
             try
             {
+                $message .= "Calling artisan command" . PHP_EOL;
                 Artisan::call($args[0], $command_args);
             }
             catch (Exception $ex) {
+                $logType = "error";
                 $message .= "An Exception Occurred: " . $ex->getMessage() . PHP_EOL;
-                $message .= "Tried running artisan command: " . $args[0] . ', with options: ' . json_encode($command_args) . PHP_EOL;
+                $message .= "Tried running artisan command: " . $args[0] . ", with options: ```" . json_encode($command_args) . "```" . PHP_EOL;
+                Log::$logType($message);
+                return response('Error, most likely invalid options', 422);
             }
         }
         else {
+            $logType = "error";
             $message .= "Invalid command: $args[0], valid commands are " . implode($validCommands, ' ');
+            Log::$logType($message);
+            return response('Error, most likely invalid options', 422);
         }
 
-        Log::info($args);
-        return $message;
+        Log::$logType($message);
+        return "Command run successfully";
     }
 }
