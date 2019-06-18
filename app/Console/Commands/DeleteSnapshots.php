@@ -6,6 +6,7 @@ use Aws\Ec2\Ec2Client;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class DeleteSnapshots extends Command
 {
@@ -38,10 +39,14 @@ class DeleteSnapshots extends Command
      */
     public function handle()
     {
+        $log = "";
+        $logType = "info";
+
         $owner = $this->option('owner') ?? env('AWS_DEFAULT_OWNER');
         $region = $this->option('region') ?? env('AWS_DEFAULT_REGION');
 
         $this->info("Running DeleteSnapshots");
+        $log .= "Running DeleteSnapshots\n";
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
         $frequency = $this->option('frequency');
 
@@ -68,25 +73,39 @@ class DeleteSnapshots extends Command
         $old = new Carbon();
 
         $this->info('Frequency: ' . $frequency);
+        $log .= 'Frequency: ' . $frequency . '\n';
+
         switch ($frequency) {
             case 'daily':
-                $this->info("Snapshot is old if older than 10 days");
-                $old = $old->subDays(10);
+                $num = 10;
+                $msg = "Snapshot is old if older than $num days";
+                $this->info($msg);
+                $log .= $msg . '\n';
+                $old = $old->subDays($num);
                 break;
             case 'weekly':
-                $this->info("Snapshot is old if older than 4 weeks");
-                $old = $old->subweeks(4);
+                $num = 4;
+                $msg = "Snapshot is old if older than $num weeks";
+                $this->info($msg);
+                $log .= $msg . '\n';
+                $old = $old->subweeks($num);
                 break;
             case 'hourly':
-                $this->info("Snapshot is old if older than 48 hours");
-                $old = $old->subHours(48);
+                $num = 48;
+                $msg = "Snapshot is old if older than $num hours";
+                $this->info($msg);
+                $log .= $msg . '\n';
+                $old = $old->subHours($num);
                 break;
         }
 
         $all = $results->toArray();
 
         $snapshots = $all['Snapshots'];
+
         $this->info("Found " . count($snapshots) . " snapshots with Frequency: " . $frequency);
+        $log .= "Found " . count($snapshots) . " snapshots with Frequency: " . $frequency . '\n';
+
 
 
         foreach ($snapshots as $snap) {
@@ -98,16 +117,24 @@ class DeleteSnapshots extends Command
                 $id = $obj->SnapshotId;
                 $this->info('Snapshot date: ' . $snapDate);
                 $this->info('Deleting Snapshot: ' . $id);
+
+                $log .= 'Snapshot date: ' . $snapDate . '\n';
+                $log .= 'Deleting Snapshot: ' . $id . '\n';
                 try {
                     $ec2->deleteSnapshot(['SnapshotId' => $id]);
                     sleep(1);
                 } catch (Exception $e) {
                     $this->error($e->getMessage());
+                    $log .= $e->getMessage() . '\n';
+                    $logType = "error";
                 }
             }
             else {
                 $this->info('Snapshot date: ' . $snapDate . ' is newer than ' . $old);
+                $log .= 'Snapshot date: ' . $snapDate . ' is newer than ' . $old . '\n';
             }
         }
+
+        Log::$logType($log);
     }
 }
