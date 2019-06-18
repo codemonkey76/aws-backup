@@ -62,6 +62,7 @@ class CommandController extends Controller
         }
 
         Log::$logType($message);
+        Log::channel('slack')->info($message);
         return "$message";
     }
 }
