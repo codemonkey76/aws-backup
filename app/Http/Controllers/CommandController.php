@@ -27,9 +27,9 @@ class CommandController extends Controller
                 if (substr($option, 0, 2) === "--") {
                     $has_val=strpos($option, '=');
                     if ($has_val) {
-                        $command_args[substr($option,2,$has_val-2)]=substr($option, $has_val+1);
+                        $command_args[substr($option,0,$has_val)]=substr($option, $has_val+1);
                     } else {
-                        $command_args[substr($option, 2)]=true;
+                        $command_args[$option]=true;
                     }
                 }
                 else {
