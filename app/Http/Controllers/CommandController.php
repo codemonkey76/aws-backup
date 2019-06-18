@@ -62,6 +62,6 @@ class CommandController extends Controller
         }
 
         Log::$logType($message);
-        return "Command run successfully";
+        return "$message";
     }
 }
