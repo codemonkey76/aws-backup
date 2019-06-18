@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Aws\Ec2\Ec2Client;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Http\Request;
-
 class HomeController extends Controller
 {
     /**
