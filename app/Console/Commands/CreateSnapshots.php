@@ -69,6 +69,7 @@ class CreateSnapshots extends Command
         $log .= 'Found ' . count($volumes) . ' volumes attached and with production tag' . PHP_EOL;
         $tag = $this->option('tag');
 
+        $log .= "Creating automated Snapshots: " . PHP_EOL;
         foreach ($volumes as $vol) {
             $obj = (Object)$vol;
             //If there are no attachments, they should not be in the list, because we specified attachment.status=attached
@@ -93,11 +94,11 @@ class CreateSnapshots extends Command
             $this->info("State = $state");
             if ($state === "running") {
                 //Only snapshot running instances
-                $this->info("Creating snapshot Automated backup of $instanceName-$volumeBlock-$date");
-                $log .= "Creating snapshot Automated backup of $instanceName-$volumeBlock-$date" . PHP_EOL;
+                $this->info("Creating snapshot Backup of $instanceName-$volumeBlock-$date");
+                $log .= $instanceName-$volumeBlock-$date . PHP_EOL;
 
                 $snap = $ec2->createSnapshot([
-                    'Description' => "Automated backup of $instanceName-$volumeBlock-$date",
+                    'Description' => "Backup of $instanceName-$volumeBlock-$date",
                     'VolumeId' => "$obj->VolumeId"
                 ]);
                 $snap_id = $snap->toArray()['SnapshotId'];
