@@ -15,7 +15,7 @@ class DeleteSnapshots extends Command
      *
      * @var string
      */
-    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=} {--region=}';
+    protected $signature = 'delete:snapshots {--frequency=hourly} {--owner=} {--region=} {--age=}';
 
     /**
      * The console command description.
@@ -44,7 +44,7 @@ class DeleteSnapshots extends Command
 
         $owner = $this->option('owner') ?? env('AWS_DEFAULT_OWNER');
         $region = $this->option('region') ?? env('AWS_DEFAULT_REGION');
-
+        $age =  $this->option('age');
         $this->info("Running DeleteSnapshots");
         $log .= "Running DeleteSnapshots" . PHP_EOL;
         $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
@@ -94,21 +94,21 @@ class DeleteSnapshots extends Command
 
         switch ($frequency) {
             case 'daily':
-                $num = 8;
+                $num = $age ?? 8;
                 $msg = "Snapshot is old if older than $num days";
                 $this->info($msg);
                 $log .= $msg . PHP_EOL;
                 $old = $old->subDays($num);
                 break;
             case 'weekly':
-                $num = 4;
+                $num = $age ?? 4;
                 $msg = "Snapshot is old if older than $num weeks";
                 $this->info($msg);
                 $log .= $msg . PHP_EOL;
                 $old = $old->subweeks($num);
                 break;
             case 'hourly':
-                $num = 30;
+                $num = $age ?? 30;
                 $msg = "Snapshot is old if older than $num hours";
                 $this->info($msg);
                 $log .= $msg . PHP_EOL;
