@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ArtisanJob;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -44,7 +45,7 @@ class CommandController extends Controller
             try
             {
                 $message .= "Calling artisan command" . PHP_EOL;
-                Artisan::call($args[0], $command_args);
+                ArtisanJob::dispatch($args[0], $command_args);
             }
             catch (Exception $ex) {
                 $logType = "error";
