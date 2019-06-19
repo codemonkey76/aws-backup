@@ -89,7 +89,7 @@ class CreateSnapshots extends Command
             $date = (new Carbon())->format('Ymd');
 
             $state = data_get($instance, 'State.Name');
-            $log .= "State = " . $state . PHP_EOL;
+//            $log .= "State = " . $state . PHP_EOL;
             $this->info("State = $state");
             if ($state === "running") {
                 //Only snapshot running instances
@@ -105,7 +105,7 @@ class CreateSnapshots extends Command
                 sleep(15); //Avoid rate limiting
 
                 $this->info('Adding Tag: Backup=' . $tag);
-                $log .= 'Adding Tag: Backup=' . $tag . PHP_EOL;
+//                $log .= 'Adding Tag: Backup=' . $tag . PHP_EOL;
                 $ec2->createTags([
                     'Resources' => [
                         $snap_id,
