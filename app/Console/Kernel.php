@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         if (stripos((string) shell_exec('ps xf | grep \'[q]ueue:work\''), 'artisan queue:work') === false) {
-            $schedule->command('queue:work --queue=default --sleep=2 --tries=3 --timeout=0')->everyMinute()->appendOutputTo(storage_path() . '/logs/scheduler.log');
+            $schedule->command('queue:work --stop-when-empty')->everyMinute()->appendOutputTo(storage_path() . '/logs/scheduler.log');
         }
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
 
