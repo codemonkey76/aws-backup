@@ -47,125 +47,125 @@ class DeleteSnapshots extends Command
         $age =  $this->option('age');
         $this->info("Running DeleteSnapshots");
         $log .= "Running DeleteSnapshots" . PHP_EOL;
-        $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
-        $frequency = $this->option('frequency');
 
-        $results = null;
-        if ($frequency==="untagged")
-        {
-            try {
-                $results = $ec2->describeSnapshots([
-                    'OwnerIds' => [$owner],
-                ]);
-            }
-            catch (Exception $ex)
-            {
-                $log .= $ex->getMessage() . PHP_EOL;
-                $logType = "error";
-                $this->error($ex->getMessage());
-            }
+        try {
+            $ec2 = new Ec2Client(['version' => '2016-11-15', 'region' => $region]);
 
-        }
-        else
-        {
-            try {
-                $results = $ec2->describeSnapshots([
-                    'OwnerIds' => [$owner],
-                    'Filters'  => [
-                        [
-                            'Name'   => 'tag:Backup',
-                            'Values' => [$frequency],
-                        ],
-                    ],
-                ]);
-            }
-            catch (Exception $ex) {
-                $log .= $ex->getMessage() . PHP_EOL;
-                $logType = "error";
-                $this->error($ex->getMessage());
-            }
+            $frequency = $this->option('frequency');
 
-        }
-
-        $old = new Carbon();
-
-        $this->info('Frequency: ' . $frequency);
-        $log .= 'Frequency: ' . $frequency . PHP_EOL;
-
-        switch ($frequency) {
-            case 'daily':
-                $num = $age ?? 8;
-                $msg = "Snapshot is old if older than $num days";
-                $this->info($msg);
-                $log .= $msg . PHP_EOL;
-                $old = $old->subDays($num);
-                break;
-            case 'weekly':
-                $num = $age ?? 4;
-                $msg = "Snapshot is old if older than $num weeks";
-                $this->info($msg);
-                $log .= $msg . PHP_EOL;
-                $old = $old->subweeks($num);
-                break;
-            case 'hourly':
-                $num = $age ?? 30;
-                $msg = "Snapshot is old if older than $num hours";
-                $this->info($msg);
-                $log .= $msg . PHP_EOL;
-                $old = $old->subHours($num);
-                break;
-        }
-
-        if ($results === null)
-        {
-            $log .= "No Snapshots found" . PHP_EOL;
-            $logType = "error";
-            $this->error("No Snapshots found");
-            return;
-        }
-
-        $all = $results->toArray();
-
-        $snapshots = $all['Snapshots'];
-
-        $this->info("Found " . count($snapshots) . " snapshots with Frequency: " . $frequency);
-        $log .= "Found " . count($snapshots) . " snapshots with Frequency: " . $frequency . PHP_EOL;
-
-
-        $oldSnaps = 0;
-        $newSnaps = 0;
-        $deleted = 0;
-        foreach ($snapshots as $snap) {
-            $obj = (Object)$snap;
-
-            $snapDate = new Carbon($obj->StartTime->jsonSerialize());
-
-            if ($snapDate < $old) {
-                $oldSnaps += 1;
-                $id = $obj->SnapshotId;
-                $this->info('Snapshot date: ' . $snapDate);
-                $this->info('Deleting Snapshot: ' . $id);
-
+            $results = null;
+            if ($frequency === "untagged") {
                 try {
-                    $ec2->deleteSnapshot(['SnapshotId' => $id]);
-                    $deleted += 1;
-                    sleep(1);
-                } catch (Exception $e) {
-                    $this->error($e->getMessage());
-                    $log .= "Error deleting snapshot: " . $id . PHP_EOL;
-                    $log .= $e->getMessage() . PHP_EOL;
+                    $results = $ec2->describeSnapshots([
+                        'OwnerIds' => [$owner],
+                    ]);
+                } catch (Exception $ex) {
+                    $log .= $ex->getMessage() . PHP_EOL;
                     $logType = "error";
+                    $this->error($ex->getMessage());
+                }
+
+            } else {
+                try {
+                    $results = $ec2->describeSnapshots([
+                        'OwnerIds' => [$owner],
+                        'Filters' => [
+                            [
+                                'Name' => 'tag:Backup',
+                                'Values' => [$frequency],
+                            ],
+                        ],
+                    ]);
+                } catch (Exception $ex) {
+                    $log .= $ex->getMessage() . PHP_EOL;
+                    $logType = "error";
+                    $this->error($ex->getMessage());
+                }
+
+            }
+
+            $old = new Carbon();
+
+            $this->info('Frequency: ' . $frequency);
+            $log .= 'Frequency: ' . $frequency . PHP_EOL;
+
+            switch ($frequency) {
+                case 'daily':
+                    $num = $age ?? 8;
+                    $msg = "Snapshot is old if older than $num days";
+                    $this->info($msg);
+                    $log .= $msg . PHP_EOL;
+                    $old = $old->subDays($num);
+                    break;
+                case 'weekly':
+                    $num = $age ?? 4;
+                    $msg = "Snapshot is old if older than $num weeks";
+                    $this->info($msg);
+                    $log .= $msg . PHP_EOL;
+                    $old = $old->subweeks($num);
+                    break;
+                case 'hourly':
+                    $num = $age ?? 30;
+                    $msg = "Snapshot is old if older than $num hours";
+                    $this->info($msg);
+                    $log .= $msg . PHP_EOL;
+                    $old = $old->subHours($num);
+                    break;
+            }
+
+            if ($results === null) {
+                $log .= "No Snapshots found" . PHP_EOL;
+                $logType = "error";
+                $this->error("No Snapshots found");
+                return;
+            }
+
+            $all = $results->toArray();
+
+            $snapshots = $all['Snapshots'];
+
+            $this->info("Found " . count($snapshots) . " snapshots with Frequency: " . $frequency);
+            $log .= "Found " . count($snapshots) . " snapshots with Frequency: " . $frequency . PHP_EOL;
+
+
+            $oldSnaps = 0;
+            $newSnaps = 0;
+            $deleted = 0;
+            foreach ($snapshots as $snap) {
+                $obj = (Object)$snap;
+
+                $snapDate = new Carbon($obj->StartTime->jsonSerialize());
+
+                if ($snapDate < $old) {
+                    $oldSnaps += 1;
+                    $id = $obj->SnapshotId;
+                    $this->info('Snapshot date: ' . $snapDate);
+                    $this->info('Deleting Snapshot: ' . $id);
+
+                    try {
+                        $ec2->deleteSnapshot(['SnapshotId' => $id]);
+                        $deleted += 1;
+                        sleep(1);
+                    } catch (Exception $e) {
+                        $this->error($e->getMessage());
+                        $log .= "Error deleting snapshot: " . $id . PHP_EOL;
+                        $log .= $e->getMessage() . PHP_EOL;
+                        $logType = "error";
+                    }
+                } else {
+                    $this->info('Snapshot date: ' . $snapDate . ' is newer than ' . $old);
+                    $newSnaps += 1;
                 }
             }
-            else {
-                $this->info('Snapshot date: ' . $snapDate . ' is newer than ' . $old);
-                $newSnaps += 1;
-            }
+            $log .= "Found $newSnaps new snapshots" . PHP_EOL;
+            $log .= "Found $oldSnaps old snapshots" . PHP_EOL;
+            $log .= "$deleted snapshots were successfully deleted" . PHP_EOL;
         }
-        $log .= "Found $newSnaps new snapshots" . PHP_EOL;
-        $log .= "Found $oldSnaps old snapshots" . PHP_EOL;
-        $log .= "$deleted snapshots were successfully deleted" . PHP_EOL;
-
-        Log::$logType($log);
+        catch (Exception $ex) {
+            $log .= $ex->getMessage() . PHP_EOL;
+        }
+        finally {
+            Log::$logType($log);
+        }
     }
 }

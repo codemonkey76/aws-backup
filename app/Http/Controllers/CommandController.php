@@ -42,7 +42,6 @@ class CommandController extends Controller
                     $command_args[''] = $option;
                 }
             }
-            Log::debug('[' . time() . '] options parsed');
             try
             {
                 $message .= "Calling artisan command" . PHP_EOL;
