@@ -94,7 +94,7 @@ class DeleteSnapshots extends Command
 
         switch ($frequency) {
             case 'daily':
-                $num = 10;
+                $num = 8;
                 $msg = "Snapshot is old if older than $num days";
                 $this->info($msg);
                 $log .= $msg . PHP_EOL;
@@ -108,7 +108,7 @@ class DeleteSnapshots extends Command
                 $old = $old->subweeks($num);
                 break;
             case 'hourly':
-                $num = 48;
+                $num = 30;
                 $msg = "Snapshot is old if older than $num hours";
                 $this->info($msg);
                 $log .= $msg . PHP_EOL;
@@ -132,33 +132,39 @@ class DeleteSnapshots extends Command
         $log .= "Found " . count($snapshots) . " snapshots with Frequency: " . $frequency . PHP_EOL;
 
 
-
+        $oldSnaps = 0;
+        $newSnaps = 0;
+        $deleted = 0;
         foreach ($snapshots as $snap) {
             $obj = (Object)$snap;
 
             $snapDate = new Carbon($obj->StartTime->jsonSerialize());
 
             if ($snapDate < $old) {
+                $oldSnaps += 1;
                 $id = $obj->SnapshotId;
                 $this->info('Snapshot date: ' . $snapDate);
                 $this->info('Deleting Snapshot: ' . $id);
 
-                $log .= 'Snapshot date: ' . $snapDate . PHP_EOL;
-                $log .= 'Deleting Snapshot: ' . $id . PHP_EOL;
                 try {
                     $ec2->deleteSnapshot(['SnapshotId' => $id]);
+                    $deleted += 1;
                     sleep(1);
                 } catch (Exception $e) {
                     $this->error($e->getMessage());
+                    $log .= "Error deleting snapshot: " . $id . PHP_EOL;
                     $log .= $e->getMessage() . PHP_EOL;
                     $logType = "error";
                 }
             }
             else {
                 $this->info('Snapshot date: ' . $snapDate . ' is newer than ' . $old);
-                $log .= 'Snapshot date: ' . $snapDate . ' is newer than ' . $old . PHP_EOL;
+                $newSnaps += 1;
             }
         }
+        $log .= "Found $newSnaps new snapshots" . PHP_EOL;
+        $log .= "Found $oldSnaps old snapshots" . PHP_EOL;
+        $log .= "$deleted snapshots were successfully deleted" . PHP_EOL;
 
         Log::$logType($log);
     }
