@@ -62,7 +62,7 @@ class CommandController extends Controller
             return response('Error, most likely invalid options', 422);
         }
 
-        Log::$logType($message);
-        return response("Command executed successfully", 200);
+//        Log::$logType($message);
+        return response("Command has been added to the queue", 200);
     }
 }
