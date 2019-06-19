@@ -95,7 +95,7 @@ class CreateSnapshots extends Command
             if ($state === "running") {
                 //Only snapshot running instances
                 $this->info("Creating snapshot Backup of $instanceName-$volumeBlock-$date");
-                $log .= $instanceName-$volumeBlock-$date . PHP_EOL;
+                $log .= "$instanceName-$volumeBlock-$date" . PHP_EOL;
 
                 $snap = $ec2->createSnapshot([
                     'Description' => "Backup of $instanceName-$volumeBlock-$date",
