@@ -15,7 +15,6 @@ class CommandController extends Controller
         $validCommands = ['create:snapshots','delete:snapshots'];
         $logType = "info";
         $message = 'Command received' . PHP_EOL;
-        Log::debug('[' . time() . "] executing");
 
         if ($request['token']!== env('SLACK_COMMAND_TOKEN')) {
             $message .= 'Invalid SLACK_COMMAND_TOKEN' . PHP_EOL;
@@ -23,13 +22,11 @@ class CommandController extends Controller
             Log::$logType($message);
             return response("Invalid TOKEN", 419);
         }
-        Log::debug('[' . time() . '] valid token');
 
         $args = explode(' ',$request['text']);
         $message .= "```" . json_encode($args) . "```" . PHP_EOL;
         $command_args = [];
         if (in_array($args[0], $validCommands)) {
-            Log::debug('[' . time() . '] valid command');
             $message .= "Valid command received: $args[0]" . PHP_EOL;
             $options = array_slice($args, 1);
             foreach ($options as $option) {
@@ -49,9 +46,7 @@ class CommandController extends Controller
             try
             {
                 $message .= "Calling artisan command" . PHP_EOL;
-                Log::debug('[' . time() . '] dispatching job');
                 ArtisanJob::dispatch($args[0], $command_args);
-                Log::debug('[' . time() . '] job dispatched');
             }
             catch (Exception $ex) {
                 $logType = "error";
